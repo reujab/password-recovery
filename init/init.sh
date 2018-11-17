@@ -35,6 +35,10 @@ fi
 cp bash_profile /home/recovery/.bash_profile
 cp xinitrc /home/recovery/.xinitrc
 
+# enables autologin
+mkdir -p "/etc/systemd/system/getty@tty1.service.d"
+cp override.conf "/etc/systemd/system/getty@tty1.service.d"
+
 # blanks passwords
 password=$(openssl passwd -1 -salt blank '')
 sed -i "s/^root:.*/root:$password:17852::::::/" /etc/shadow
