@@ -1,6 +1,6 @@
 #!/usr/bin/bash -e
 
-cd /opt/recovery
+cd /opt/recovery/init
 
 # enables wired internet
 systemctl start dhcpcd
