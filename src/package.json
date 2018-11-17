@@ -1,0 +1,22 @@
+{
+  "name": "recovery",
+  "version": "0.0.0",
+  "description": "Recovers passwords on Windows and Linux",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/reujab/recovery.git"
+  },
+  "author": "reujab",
+  "license": "Unlicense",
+  "bugs": {
+    "url": "https://github.com/reujab/recovery/issues"
+  },
+  "homepage": "https://github.com/reujab/recovery#readme",
+  "devDependencies": {
+    "electron": "^3.0.9"
+  }
+}
