@@ -11,9 +11,14 @@ while ! ping -c 1 1.1.1.1; do true; done
 # installs required packages
 pacman -Sy --needed --noconfirm \
 	chntpw \
+	compton \
 	dialog \
+	gtk3 \
+	libxss \
 	nodejs \
 	npm \
+	nss \
+	openbox \
 	vim \
 	wpa_supplicant \
 	xorg \
