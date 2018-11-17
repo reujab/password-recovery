@@ -21,6 +21,12 @@ pacman -Sy --needed --noconfirm \
 	xorg-xclock \
 	xterm
 
+# hides grub
+grep GRUB_TIMEOUT=0 /etc/default/grub || {
+	echo GRUB_TIMEOUT=0 >> /etc/default/grub
+	grub-mkconfig -o /boot/grub/grub.cfg
+}
+
 # adds recovery user
 if ! id recovery; then
 	useradd -m recovery
