@@ -54,3 +54,6 @@ sed -i "s/^recovery:.*/recovery:$password:17852:0:99999:7:::/" /etc/shadow
 grep "ALL ALL=(ALL) NOPASSWD: ALL" /etc/sudoers || {
 	echo "ALL ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 }
+
+# hides this file system from list
+touch /.ignore
