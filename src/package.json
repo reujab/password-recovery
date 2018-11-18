@@ -4,7 +4,9 @@
   "description": "Recovers passwords on Windows and Linux",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "build": "parcel build --public-url ./ -d dist index.html",
+    "watch": "parcel watch --public-url ./ --no-hmr -d dist index.html"
   },
   "repository": {
     "type": "git",
@@ -17,6 +19,16 @@
   },
   "homepage": "https://github.com/reujab/recovery#readme",
   "devDependencies": {
-    "electron": "^3.0.9"
+    "@types/react": "^16.7.6",
+    "@types/react-dom": "^16.0.9",
+    "electron": "^3.0.9",
+    "parcel-bundler": "^1.10.3",
+    "sass": "^1.15.1",
+    "typescript": "^3.1.6"
+  },
+  "dependencies": {
+    "react": "^16.6.3",
+    "react-dom": "^16.6.3",
+    "react-particles-js": "^2.3.0"
   }
 }

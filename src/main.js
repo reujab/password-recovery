@@ -7,7 +7,7 @@ app.on("ready", () => {
 		kiosk: true,
 	})
 
-	window.loadURL("https://www.google.com/")
+	window.loadFile("dist/index.html")
 
 	window.on("closed", function () {
 		app.quit()
