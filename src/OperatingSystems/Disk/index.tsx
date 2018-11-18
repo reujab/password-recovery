@@ -1,5 +1,4 @@
 import * as React from "react"
-import OperatingSystem from "./OperatingSystem"
 
 interface Props {
 	children: JSX.Element[]
