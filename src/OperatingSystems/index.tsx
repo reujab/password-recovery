@@ -3,33 +3,27 @@ import Disk from "./Disk"
 import OperatingSystem from "./Disk/OperatingSystem"
 import { IPanelProps } from "@blueprintjs/core"
 import { faLinux, faWindows } from "@fortawesome/free-brands-svg-icons"
+import { CDisk, EOperatingSystem } from "../disks"
 
-export default class OperatingSystems extends React.Component<IPanelProps> {
+interface Props {
+	disks: CDisk[]
+}
+
+export default class OperatingSystems extends React.Component<IPanelProps & Props> {
 	render() {
-		return (
-			<React.Fragment>
-				<Disk name="Example Disk #1">
-					{[
-						<OperatingSystem
-							key={Math.random()}
-							icon={faWindows}
-							title="Windows 7"
-						/>,
-						<OperatingSystem
-							key={Math.random()}
-							icon={faWindows}
-							title="Windows 10"
-						/>,
-					]}
-				</Disk>
-				<Disk name="Example Disk #2">{[
+		return this.props.disks.map((disk) => (
+			<Disk
+				key={disk.id}
+				name={disk.name}
+			>
+				{disk.operatingSystems.map((os) => (
 					<OperatingSystem
-						key={Math.random()}
-						icon={faLinux}
-						title="Ubuntu 16.04"
-					/>,
-				]}</Disk>
-			</React.Fragment>
-		)
+						key={os.id}
+						icon={os.type === EOperatingSystem.Windows ? faWindows : faLinux}
+						title={os.name}
+					/>
+				))}
+			</Disk>
+		))
 	}
 }

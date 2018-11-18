@@ -5,8 +5,8 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "build": "parcel build --public-url ./ -d dist index.html",
-    "watch": "parcel watch --public-url ./ --no-hmr -d dist index.html"
+    "build": "parcel build -t electron --public-url ./ -d dist index.html",
+    "watch": "parcel watch -t electron --public-url ./ --no-hmr -d dist index.html"
   },
   "repository": {
     "type": "git",
@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/reujab/recovery#readme",
   "devDependencies": {
+    "@types/node": "^10.12.9",
     "@types/react": "^16.7.6",
     "@types/react-dom": "^16.0.9",
     "electron": "^3.0.9",

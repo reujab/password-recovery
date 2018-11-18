@@ -1,12 +1,14 @@
 import * as React from "react"
-import Particles from "react-particles-js"
-import ReactDOM from "react-dom"
-import particles from "./particles"
+import * as ReactDOM from "react-dom"
 import OperatingSystems from "./OperatingSystems"
+import Particles from "react-particles-js"
+import getDisks, { CDisk } from "./disks"
+import particles from "./particles"
 import { Card, PanelStack } from "@blueprintjs/core"
 
 interface State {
 	showParticles: boolean
+	disks: CDisk[]
 }
 
 class Index extends React.Component<any, State> {
@@ -16,6 +18,7 @@ class Index extends React.Component<any, State> {
 		this.keyDown = this.keyDown.bind(this)
 		this.state = {
 			showParticles: true,
+			disks: getDisks(),
 		}
 	}
 
@@ -47,6 +50,9 @@ class Index extends React.Component<any, State> {
 					<Card elevation={4}>
 						<PanelStack initialPanel={{
 							component: OperatingSystems,
+							props: {
+								disks: this.state.disks,
+							},
 							title: "Operating Systems",
 						}} />
 					</Card>
