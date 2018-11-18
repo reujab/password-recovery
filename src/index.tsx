@@ -2,6 +2,8 @@ import * as React from "react"
 import Particles from "react-particles-js"
 import ReactDOM from "react-dom"
 import particles from "./particles"
+import OperatingSystems from "./OperatingSystems"
+import { Card, PanelStack } from "@blueprintjs/core"
 
 interface State {
 	showParticles: boolean
@@ -40,6 +42,15 @@ class Index extends React.Component<any, State> {
 					height={`${innerHeight}px`}
 					params={particles}
 				/>}
+
+				<div className="content">
+					<Card elevation={4}>
+						<PanelStack initialPanel={{
+							component: OperatingSystems,
+							title: "Operating Systems",
+						}} />
+					</Card>
+				</div>
 			</React.Fragment>
 		)
 	}
