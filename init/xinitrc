@@ -35,4 +35,4 @@ fi
 cd /opt/recovery/src
 openbox &
 compton &
-exec npm start
+exec sudo npm start
