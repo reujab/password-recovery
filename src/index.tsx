@@ -1,5 +1,7 @@
 import * as React from "react"
 import * as ReactDOM from "react-dom"
+import * as child_process from "child_process"
+import * as fs from "fs"
 import OperatingSystems from "./OperatingSystems"
 import Particles from "react-particles-js"
 import getDisks, { CDisk } from "./disks"
@@ -60,6 +62,13 @@ class Index extends React.Component<any, State> {
 			</React.Fragment>
 		)
 	}
+}
+
+// unmounts any potential mounts
+for (const file of fs.readdirSync("/mnt")) {
+	const mountPoint = `/mnt/${file}`
+	child_process.spawnSync("umount", [mountPoint])
+	fs.rmdirSync(mountPoint)
 }
 
 addEventListener("DOMContentLoaded", () => {
