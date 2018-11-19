@@ -18,6 +18,7 @@ export class COperatingSystem {
 	id: string
 	name: string
 	type: EOperatingSystem
+	hostname: string
 
 	constructor(id: string) {
 		this.id = id
@@ -75,12 +76,20 @@ export default function getDisks(): CDisk[] {
 				switch (os.type) {
 					// TODO: windows
 					case EOperatingSystem.Linux:
+						// operating system name
 						try {
+							// FIXME: potential security risk by buffering the entire file into memory
 							os.name = ini.parse(`${fs.readFileSync(`${mountPoint}/etc/os-release`)}`).NAME
 						} catch (err) { }
 						if (!os.name) {
 							os.name = "Linux"
 						}
+
+						// operating system hostname
+						try {
+							os.hostname = `${fs.readFileSync(`${mountPoint}/etc/hostname`)}`
+						} catch (err) { }
+
 						break
 				}
 

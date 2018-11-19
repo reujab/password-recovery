@@ -1,19 +1,21 @@
 import * as React from "react"
+import { COperatingSystem, EOperatingSystem } from "../../../disks";
 import { Card } from "@blueprintjs/core"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faLinux, faWindows } from "@fortawesome/free-brands-svg-icons"
 
 interface Props {
-	icon: any
-	title: string
+	children: COperatingSystem
 }
 
 export default class OperatingSystem extends React.Component<Props> {
 	render() {
 		return (
 			<Card className="operating-system" elevation={1} interactive={true}>
-				<FontAwesomeIcon icon={this.props.icon} />
+				<FontAwesomeIcon icon={this.props.children.type === EOperatingSystem.Windows ? faWindows : faLinux} />
 				<div className="description">
-					<div className="title">{this.props.title}</div>
+					<div className="title">{this.props.children.name}</div>
+					<div className="hostname">{this.props.children.hostname}</div>
 				</div>
 			</Card>
 		)
