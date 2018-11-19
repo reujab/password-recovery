@@ -1,5 +1,6 @@
 import * as child_process from "child_process"
 import * as fs from "fs"
+import * as ini from "ini"
 
 export class CDisk {
 	id: string
@@ -18,10 +19,8 @@ export class COperatingSystem {
 	name: string
 	type: EOperatingSystem
 
-	constructor(id: string, name: string, type: EOperatingSystem) {
+	constructor(id: string) {
 		this.id = id
-		this.name = name
-		this.type = type
 	}
 }
 
@@ -65,14 +64,27 @@ export default function getDisks(): CDisk[] {
 			}).
 			map((partition) => {
 				const mountPoint = `/mnt/${partition}`
-				let type
+				const os = new COperatingSystem(partition)
+
 				if (fs.existsSync(`${mountPoint}/Windows/System32/config/SAM`)) {
-					type = EOperatingSystem.Windows
+					os.type = EOperatingSystem.Windows
 				} else {
-					type = EOperatingSystem.Linux
+					os.type = EOperatingSystem.Linux
 				}
 
-				return new COperatingSystem(partition, partition, type)
+				switch (os.type) {
+					// TODO: windows
+					case EOperatingSystem.Linux:
+						try {
+							os.name = ini.parse(`${fs.readFileSync(`${mountPoint}/etc/os-release`)}`).NAME
+						} catch (err) { }
+						if (!os.name) {
+							os.name = "Linux"
+						}
+						break
+				}
+
+				return os
 			})
 	}
 
