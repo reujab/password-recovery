@@ -19,6 +19,7 @@ export class COperatingSystem {
 	name: string
 	type: EOperatingSystem
 	hostname: string
+	users: CUser[]
 
 	constructor(id: string) {
 		this.id = id
@@ -28,6 +29,16 @@ export class COperatingSystem {
 export enum EOperatingSystem {
 	Windows,
 	Linux,
+}
+
+export class CUser {
+	id: string
+	name: string
+	locked: boolean
+
+	constructor(id: string) {
+		this.id = id
+	}
 }
 
 export default function getDisks(): CDisk[] {
@@ -96,6 +107,28 @@ export default function getDisks(): CDisk[] {
 							console.error(err)
 						}
 
+
+						// users
+						// FIXME:
+						try {
+							os.users = child_process.
+								execSync(String.raw`chntpw -l ${mountPoint}/Windows/System32/config/SAM`).
+								toString().
+								split("\n").
+								filter((line) => /^\| [0-9a-f]/.test(line)).
+								map((line) => {
+									const fields = line.split("|")
+									const user = new CUser(fields[1].trim())
+									user.name = fields[2].trim()
+									user.locked = fields[4].trim() === "dis/lock"
+									return user
+								})
+
+							console.log(os.users)
+						} catch (err) {
+							console.error(err)
+						}
+
 						break
 					case EOperatingSystem.Linux:
 						// operating system name
@@ -112,6 +145,24 @@ export default function getDisks(): CDisk[] {
 						// operating system hostname
 						try {
 							os.hostname = `${fs.readFileSync(`${mountPoint}/etc/hostname`)}`
+						} catch (err) {
+							console.error(err)
+						}
+
+						// users
+						try {
+							os.users = fs.
+								readFileSync(`${mountPoint}/etc/passwd`).
+								toString().
+								split("\n").
+								filter((line) => line).
+								map((line) => {
+									const fields = line.split(":")
+									const user = new CUser(fields[2])
+									user.name = fields[4] || fields[0]
+									user.locked = /nologin/.test(fields[6])
+									return user
+								})
 						} catch (err) {
 							console.error(err)
 						}
