@@ -102,7 +102,9 @@ export default function getDisks(): CDisk[] {
 						try {
 							// FIXME: potential security risk by buffering the entire file into memory
 							os.name = ini.parse(`${fs.readFileSync(`${mountPoint}/etc/os-release`)}`).NAME
-						} catch (err) { }
+						} catch (err) {
+							console.error(err)
+						}
 						if (!os.name) {
 							os.name = "Linux"
 						}
@@ -110,7 +112,9 @@ export default function getDisks(): CDisk[] {
 						// operating system hostname
 						try {
 							os.hostname = `${fs.readFileSync(`${mountPoint}/etc/hostname`)}`
-						} catch (err) { }
+						} catch (err) {
+							console.error(err)
+						}
 
 						break
 				}
