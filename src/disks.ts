@@ -74,7 +74,29 @@ export default function getDisks(): CDisk[] {
 				}
 
 				switch (os.type) {
-					// TODO: windows
+					case EOperatingSystem.Windows:
+						// operating system name
+						// FIXME:
+						try {
+							os.name = child_process.execSync(String.raw`chntpw -e ${mountPoint}/Windows/System32/config/SOFTWARE <<< $'cat \Microsoft\Windows NT\CurrentVersion\ProductName\nq\n' | grep -E '^Windows'`).toString()
+						} catch (err) {
+							console.error(err)
+							// TODO: display warning message
+							os.name = "Hibernating Windows"
+						}
+						if (!os.name) {
+							os.name = "Windows"
+						}
+
+						// operating system hostname
+						// FIXME:
+						try {
+							os.hostname = child_process.execSync(String.raw`chntpw -e ${mountPoint}/Windows/System32/config/SYSTEM <<< $'cat \ControlSet001\Control\ComputerName\ComputerName\ComputerName\nq' | sed '10q;d'`).toString()
+						} catch (err) {
+							console.error(err)
+						}
+
+						break
 					case EOperatingSystem.Linux:
 						// operating system name
 						try {
