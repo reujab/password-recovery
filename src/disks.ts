@@ -32,12 +32,32 @@ export enum EOperatingSystem {
 }
 
 export class CUser {
+	os: COperatingSystem
 	id: string
 	name: string
 	locked: boolean
 
-	constructor(id: string) {
+	constructor(os: COperatingSystem, id: string) {
+		this.os = os
 		this.id = id
+	}
+
+	blankPassword() {
+		switch (this.os.type) {
+			case EOperatingSystem.Windows:
+				try {
+					child_process.execSync(String.raw`chntpw -i /mnt/${this.os.id}/Windows/System32/config/SAM <<< $'1\n${this.id}\n1\nq\nq\ny'`)
+				} catch (err) {
+					if (err.status !== 2) {
+						throw err
+					}
+				}
+
+				break
+			case EOperatingSystem.Linux:
+				// TODO
+				break
+		}
 	}
 }
 
@@ -118,7 +138,7 @@ export default function getDisks(): CDisk[] {
 								filter((line) => /^\| [0-9a-f]/.test(line)).
 								map((line) => {
 									const fields = line.split("|")
-									const user = new CUser(fields[1].trim())
+									const user = new CUser(os, fields[1].trim())
 									user.name = fields[2].trim()
 									user.locked = fields[4].trim() === "dis/lock"
 									return user
@@ -158,7 +178,7 @@ export default function getDisks(): CDisk[] {
 								filter((line) => line).
 								map((line) => {
 									const fields = line.split(":")
-									const user = new CUser(fields[2])
+									const user = new CUser(os, fields[2])
 									user.name = fields[4] || fields[0]
 									user.locked = /nologin/.test(fields[6])
 									return user

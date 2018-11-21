@@ -2,13 +2,14 @@ import * as React from "react"
 import { CUser } from "../../../../disks"
 import { Card, IPanelProps } from "@blueprintjs/core"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import User from "./User"
 import { faUser } from "@fortawesome/free-solid-svg-icons"
 
 interface Props {
 	children: CUser[]
 }
 
-export default class User extends React.Component<IPanelProps & Props> {
+export default class Users extends React.Component<IPanelProps & Props> {
 	render() {
 		return this.props.children.map((user) => (
 			<Card
@@ -17,7 +18,13 @@ export default class User extends React.Component<IPanelProps & Props> {
 				elevation={1}
 				interactive={true}
 				// TODO:
-				onClick={() => console.log("TODO")}
+				onClick={() => this.props.openPanel({
+					component: User,
+					props: {
+						children: user,
+					},
+					title: user.name,
+				})}
 			>
 				<FontAwesomeIcon icon={faUser} />
 				<div className="description">
