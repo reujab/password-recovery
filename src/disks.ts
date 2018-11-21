@@ -143,8 +143,6 @@ export default function getDisks(): CDisk[] {
 									user.locked = fields[4].trim() === "dis/lock"
 									return user
 								})
-
-							console.log(os.users)
 						} catch (err) {
 							console.error(err)
 						}
