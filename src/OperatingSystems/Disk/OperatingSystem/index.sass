@@ -1,20 +1,21 @@
 .operating-system
 	display: flex
-	padding: 5px !important
+	flex-shrink: 0
 	margin: 10px 0
+	padding: 5px !important
 
-	svg
+	& > svg
 		flex-shrink: 0
 		height: 75px
 		margin-right: 10px
 		width: 75px !important
 
-	.description
+	& > .description
 		flex-grow: 1
 		overflow: auto
 
-		.title
+		& > .title
 			font-size: 2em
 
-		.hostname
+		& > .hostname
 			text-overflow: ellipsis
