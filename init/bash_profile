@@ -1,2 +1,2 @@
 startx &&
-logout
+sudo shutdown now
