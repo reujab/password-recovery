@@ -10,6 +10,7 @@ while ! ping -c 1 1.1.1.1; do true; done
 
 # installs required packages
 pacman -Sy --needed --noconfirm \
+	cantarell-fonts \
 	chntpw \
 	compton \
 	dialog \
