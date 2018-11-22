@@ -1,8 +1,8 @@
 import * as React from "react"
+import User from "./User"
 import { CUser } from "../../../../disks"
 import { Card, IPanelProps } from "@blueprintjs/core"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import User from "./User"
 import { faUser } from "@fortawesome/free-solid-svg-icons"
 
 interface Props {
@@ -17,7 +17,6 @@ export default class Users extends React.Component<IPanelProps & Props> {
 				className="user"
 				elevation={1}
 				interactive={true}
-				// TODO:
 				onClick={() => this.props.openPanel({
 					component: User,
 					props: {

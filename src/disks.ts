@@ -16,6 +16,7 @@ export class CDisk {
 
 export class COperatingSystem {
 	id: string
+	mountPoint: string
 	name: string
 	type: EOperatingSystem
 	hostname: string
@@ -63,54 +64,55 @@ export class CUser {
 
 export default function getDisks(): CDisk[] {
 	const devices = fs.readdirSync("/dev")
-	const disks: CDisk[] = devices.
+
+	return devices.
+		// Filters out every nonstorage device
 		filter((device) => /^sd[a-z]+$/.test(device)).
-		map((disk) => new CDisk(disk, disk))
+		map((storageDevice) => {
+			const disk = new CDisk(storageDevice, storageDevice)
 
-	for (const disk of disks) {
-		disk.operatingSystems = devices.
-			filter((device) => device.startsWith(disk.id) && /^sd[a-z]+\d+$/.test(device)).
-			filter((partition) => {
-				const device = `/dev/${partition}`
-				const mountPoint = `/mnt/${partition}`
+			// Scans every partition on the disk for an operating system
+			disk.operatingSystems = devices.
+				filter((device) => device.startsWith(disk.id) && /^sd[a-z]+\d+$/.test(device)).
+				filter((partition) => {
+					const device = `/dev/${partition}`
+					const mountPoint = `/mnt/${partition}`
 
-				fs.mkdirSync(mountPoint)
+					fs.mkdirSync(mountPoint)
 
-				const status = child_process.spawnSync("mount", [
-					device,
-					mountPoint,
-				]).status
-				if (status !== 0) {
-					fs.rmdirSync(mountPoint)
-					return false
-				}
+					const status = child_process.spawnSync("mount", [
+						device,
+						mountPoint,
+					]).status
+					if (status !== 0) {
+						fs.rmdirSync(mountPoint)
+						return false
+					}
 
-				const containsOS = !fs.existsSync(`${mountPoint}/.ignore`) && (fs.existsSync(`${mountPoint}/Windows/System32/config/SAM`) || fs.existsSync(`${mountPoint}/etc/shadow`))
+					// The `.ignore` file is on the bootable media, so the user won't try to modify
+					// the bootable media itself.
+					const containsOS = !fs.existsSync(`${mountPoint}/.ignore`) && (fs.existsSync(`${mountPoint}/Windows/System32/config/SAM`) || fs.existsSync(`${mountPoint}/etc/shadow`))
 
-				if (!containsOS) {
-					child_process.spawnSync("umount", [mountPoint])
-					fs.rmdirSync(mountPoint)
-				}
+					if (!containsOS) {
+						child_process.spawnSync("umount", [mountPoint])
+						fs.rmdirSync(mountPoint)
+					}
 
-				return containsOS
-			}).
-			map((partition) => {
-				const mountPoint = `/mnt/${partition}`
-				const os = new COperatingSystem(partition)
+					return containsOS
+				}).
+				map((partition) => {
+					const os = new COperatingSystem(partition)
+					os.mountPoint = `/mnt/${partition}`
 
-				if (fs.existsSync(`${mountPoint}/Windows/System32/config/SAM`)) {
-					os.type = EOperatingSystem.Windows
-				} else {
-					os.type = EOperatingSystem.Linux
-				}
+					if (fs.existsSync(`${os.mountPoint}/Windows/System32/config/SAM`)) {
+						os.type = EOperatingSystem.Windows
 
-				switch (os.type) {
-					case EOperatingSystem.Windows:
-						// operating system name
+						// Operating system name
 						// FIXME:
 						try {
-							os.name = child_process.execSync(String.raw`chntpw -e ${mountPoint}/Windows/System32/config/SOFTWARE <<< $'cat \Microsoft\Windows NT\CurrentVersion\ProductName\nq\n' | grep -E '^Windows'`).toString()
+							os.name = child_process.execSync(String.raw`chntpw -e ${os.mountPoint}/Windows/System32/config/SOFTWARE <<< $'cat \Microsoft\Windows NT\CurrentVersion\ProductName\nq\n' | grep -E '^Windows'`).toString()
 						} catch (err) {
+							// Windows is probably hibernating.
 							console.error(err)
 							// TODO: display warning message
 							os.name = "Hibernating Windows"
@@ -119,20 +121,20 @@ export default function getDisks(): CDisk[] {
 							os.name = "Windows"
 						}
 
-						// operating system hostname
+						// Operating system hostname
 						// FIXME:
 						try {
-							os.hostname = child_process.execSync(String.raw`chntpw -e ${mountPoint}/Windows/System32/config/SYSTEM <<< $'cat \ControlSet001\Control\ComputerName\ComputerName\ComputerName\nq' | sed '10q;d'`).toString()
+							os.hostname = child_process.execSync(String.raw`chntpw -e ${os.mountPoint}/Windows/System32/config/SYSTEM <<< $'cat \ControlSet001\Control\ComputerName\ComputerName\ComputerName\nq' | sed '10q;d'`).toString()
 						} catch (err) {
 							console.error(err)
 						}
 
 
-						// users
+						// Users
 						// FIXME:
 						try {
 							os.users = child_process.
-								execSync(String.raw`chntpw -l ${mountPoint}/Windows/System32/config/SAM`).
+								execSync(String.raw`chntpw -l ${os.mountPoint}/Windows/System32/config/SAM`).
 								toString().
 								split("\n").
 								filter((line) => /^\| [0-9a-f]/.test(line)).
@@ -146,13 +148,12 @@ export default function getDisks(): CDisk[] {
 						} catch (err) {
 							console.error(err)
 						}
+					} else {
+						os.type = EOperatingSystem.Linux
 
-						break
-					case EOperatingSystem.Linux:
-						// operating system name
+						// Operating system name
 						try {
-							// FIXME: potential security risk by buffering the entire file into memory
-							os.name = ini.parse(`${fs.readFileSync(`${mountPoint}/etc/os-release`)}`).NAME
+							os.name = ini.parse(`${fs.readFileSync(`${os.mountPoint}/etc/os-release`)}`).NAME
 						} catch (err) {
 							console.error(err)
 						}
@@ -160,17 +161,17 @@ export default function getDisks(): CDisk[] {
 							os.name = "Linux"
 						}
 
-						// operating system hostname
+						// Operating system hostname
 						try {
-							os.hostname = `${fs.readFileSync(`${mountPoint}/etc/hostname`)}`
+							os.hostname = `${fs.readFileSync(`${os.mountPoint}/etc/hostname`)}`
 						} catch (err) {
 							console.error(err)
 						}
 
-						// users
+						// Users
 						try {
 							os.users = fs.
-								readFileSync(`${mountPoint}/etc/passwd`).
+								readFileSync(`${os.mountPoint}/etc/passwd`).
 								toString().
 								split("\n").
 								filter((line) => line).
@@ -178,20 +179,19 @@ export default function getDisks(): CDisk[] {
 									const fields = line.split(":")
 									const user = new CUser(os, fields[2])
 									user.name = fields[4] || fields[0]
-									user.locked = /nologin/.test(fields[6])
+									user.locked = fields[6].includes("nologin")
 									return user
 								})
 						} catch (err) {
 							console.error(err)
 						}
+					}
 
-						break
-				}
+					return os
+				})
 
-				return os
-			})
-	}
-
-	// removes disks without operating systems
-	return disks.filter((disk) => disk.operatingSystems.length)
+			return disk
+		}).
+		// Filters out operating systems without operating systems
+		filter((disk) => disk.operatingSystems.length)
 }

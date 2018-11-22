@@ -1,6 +1,6 @@
 import * as React from "react"
-import { CUser } from "../../../../../disks"
 import { Button, Intent, IPanelProps, Toaster } from "@blueprintjs/core"
+import { CUser } from "../../../../../disks"
 
 interface Props {
 	children: CUser

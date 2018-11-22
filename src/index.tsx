@@ -13,10 +13,13 @@ interface State {
 	disks: CDisk[]
 }
 
-class Index extends React.Component<any, State> {
+class Index extends React.Component<{}, State> {
 	constructor(props) {
 		super(props)
 
+		// This method must be bound here and not in `componentDidMount` because if it were bound in
+		// `componentDidMount`, then `removeEventListener` would not remove the listener since
+		// binding creates a new function.
 		this.keyDown = this.keyDown.bind(this)
 		this.state = {
 			showParticles: true,
@@ -48,23 +51,21 @@ class Index extends React.Component<any, State> {
 					params={particles}
 				/>}
 
-				<div className="content">
-					<Card elevation={4}>
-						<PanelStack initialPanel={{
-							component: Disks,
-							props: {
-								disks: this.state.disks,
-							},
-							title: "Operating Systems",
-						}} />
-					</Card>
-				</div>
+				<Card className="main-card" elevation={4}>
+					<PanelStack initialPanel={{
+						component: Disks,
+						props: {
+							children: this.state.disks,
+						},
+						title: "Operating Systems",
+					}} />
+				</Card>
 			</React.Fragment>
 		)
 	}
 }
 
-// unmounts any potential mounts
+// Unmounts any potential mounts
 for (const file of fs.readdirSync("/mnt")) {
 	const mountPoint = `/mnt/${file}`
 	child_process.spawnSync("umount", [mountPoint])
