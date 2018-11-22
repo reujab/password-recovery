@@ -2,7 +2,7 @@ import * as React from "react"
 import * as ReactDOM from "react-dom"
 import * as child_process from "child_process"
 import * as fs from "fs"
-import OperatingSystems from "./OperatingSystems"
+import Disks from "./Disks"
 import Particles from "react-particles-js"
 import getDisks, { CDisk } from "./disks"
 import particles from "./particles"
@@ -51,7 +51,7 @@ class Index extends React.Component<any, State> {
 				<div className="content">
 					<Card elevation={4}>
 						<PanelStack initialPanel={{
-							component: OperatingSystems,
+							component: Disks,
 							props: {
 								disks: this.state.disks,
 							},

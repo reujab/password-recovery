@@ -9,7 +9,7 @@ interface Props {
 	disks: CDisk[]
 }
 
-export default class OperatingSystems extends React.Component<IPanelProps & Props> {
+export default class Disks extends React.Component<IPanelProps & Props> {
 	render() {
 		return this.props.disks.map((disk) => (
 			<Disk
