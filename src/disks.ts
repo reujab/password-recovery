@@ -1,15 +1,15 @@
 import * as child_process from "child_process"
 import * as fs from "fs"
 import * as ini from "ini"
+import _ from "lodash"
 
 export class CDisk {
 	id: string
 	name: string
 	operatingSystems: COperatingSystem[]
 
-	constructor(id: string, name: string) {
+	constructor(id: string) {
 		this.id = id
-		this.name = name
 		this.operatingSystems = []
 	}
 }
@@ -64,12 +64,25 @@ export class CUser {
 
 export default function getDisks(): CDisk[] {
 	const devices = fs.readdirSync("/dev")
+	const scsi = _.keyBy(
+		fs.
+			readdirSync("/sys/bus/scsi/devices").
+			filter((device) => /^\d+:\d+:\d+:\d+$/.test(device)).
+			map((device) => ({
+				id: `${fs.readdirSync(`/sys/bus/scsi/devices/${device}/block`)[0]}`,
+				name: `${fs.readFileSync(`/sys/bus/scsi/devices/${device}/vendor`)} ${fs.readFileSync(`/sys/bus/scsi/devices/${device}/model`)}`,
+			})),
+		"id",
+	)
 
 	return devices.
 		// Filters out every nonstorage device
 		filter((device) => /^sd[a-z]+$/.test(device)).
 		map((storageDevice) => {
-			const disk = new CDisk(storageDevice, storageDevice)
+			const disk = new CDisk(storageDevice)
+
+			// Gets SCSI vendor and model
+			disk.name = scsi[disk.id] ? scsi[disk.id].name : `Unknown (${disk.id})`
 
 			// Scans every partition on the disk for an operating system
 			disk.operatingSystems = devices.
