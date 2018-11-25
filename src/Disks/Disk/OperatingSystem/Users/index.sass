@@ -1,8 +1,16 @@
+@import "User"
+
+.users
+	overflow: auto
+
 .user
 	display: flex
 	flex-shrink: 0
-	margin: 5px 10px
+	margin: 0 10px 10px 10px
 	padding: 5px !important
+
+	&:first-child, &:last-child
+		margin-top: 10px
 
 	& > svg
 		flex-shrink: 0

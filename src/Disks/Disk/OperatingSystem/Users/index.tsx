@@ -11,25 +11,29 @@ interface Props {
 
 export default class Users extends React.Component<IPanelProps & Props> {
 	render() {
-		return this.props.children.map((user) => (
-			<Card
-				key={user.id}
-				className="user"
-				elevation={1}
-				interactive={true}
-				onClick={() => this.props.openPanel({
-					component: User,
-					props: {
-						children: user,
-					},
-					title: user.name,
-				})}
-			>
-				<FontAwesomeIcon icon={faUser} />
-				<div className="description">
-					<div className="title">{user.name}</div>
-				</div>
-			</Card>
-		))
+		return (
+			<div className="users">
+				{this.props.children.map((user) => (
+					<Card
+						key={user.id}
+						className="user"
+						elevation={1}
+						interactive={true}
+						onClick={() => this.props.openPanel({
+							component: User,
+							props: {
+								children: user,
+							},
+							title: user.name,
+						})}
+					>
+						<FontAwesomeIcon icon={faUser} />
+						<div className="description">
+							<div className="title">{user.name}</div>
+						</div>
+					</Card>
+				))}
+			</div>
+		)
 	}
 }
