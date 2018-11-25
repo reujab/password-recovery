@@ -47,9 +47,8 @@ mkdir -p "/etc/systemd/system/getty@tty1.service.d"
 cp override.conf "/etc/systemd/system/getty@tty1.service.d"
 
 # blanks passwords
-password=$(openssl passwd -1 -salt blank "")
-sed -i "s/^root:.*/root:$password:17852::::::/" /etc/shadow
-sed -i "s/^recovery:.*/recovery:$password:17852:0:99999:7:::/" /etc/shadow
+sed -i "s/^root:.*/root::17852::::::/" /etc/shadow
+sed -i "s/^recovery:.*/recovery::17852:0:99999:7:::/" /etc/shadow
 
 # enables sudo without password for every user
 grep "ALL ALL=(ALL) NOPASSWD: ALL" /etc/sudoers || {
