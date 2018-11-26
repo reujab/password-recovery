@@ -1,7 +1,7 @@
+import * as _ from "lodash"
 import * as child_process from "child_process"
 import * as fs from "fs"
 import * as ini from "ini"
-import _ from "lodash"
 
 export class CDisk {
 	id: string
